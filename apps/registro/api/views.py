@@ -11,7 +11,7 @@ class RegApiView(ViewSet):
         return Response(status=status.HTTP_200_OK, data=serializer.data)
     
     def retrieve(self,request, pk=int):
-        serializer = RegisSerializer(Registro.objects.get(pk=int))
+        serializer = RegisSerializer(Registro.objects.get(pk=pk))
         return Response(status=status.HTTP_201_CREATED, data=serializer.data)
     
     def create(self, request):
@@ -20,19 +20,18 @@ class RegApiView(ViewSet):
         serializer.save()
         return Response(status=status.HTTP_201_CREATED, data=serializer.data)
     
-    def update(self, request, pk=None):
+    def update(self, request, pk=int):
         try:
-            Registro = Registro.objects.get(pk=pk)
-        except Registro.DoesNotExist:
+            registro = Registro.objects.get(pk=pk)
+            serializer = RegisSerializer(registro, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(status=status.HTTP_200_OK, data=serializer.data)
+        except registro.DoesNotExist:
             return Response({'error': 'Producto no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = RegisSerializer(Registro, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def partial_update(self, request, pk=None):
+    def partial_update(self, request, pk=int):
         try:
             producto = RegisSerializer.objects.get(pk=pk)  # Buscar el producto por ID
         except Registro.DoesNotExist:
@@ -44,7 +43,7 @@ class RegApiView(ViewSet):
             return Response(serializer.data)  # Devolver los datos actualizados
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def destroy(self, request, pk=None):
+    def destroy(self, request, pk=int):
         try:
             producto = Registro.objects.get(pk=pk)
             producto.delete()
