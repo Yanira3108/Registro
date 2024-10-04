@@ -19,3 +19,23 @@ class RegApiView(ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(status=status.HTTP_201_CREATED, data=serializer.data)
+    
+    def update(self, request, pk=None):
+        try:
+            Registro = Registro.objects.get(pk=pk)
+        except Registro.DoesNotExist:
+            return Response({'error': 'Producto no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = RegisSerializer(Registro, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def destroy(self, request, pk=None):
+        try:
+            producto = Registro.objects.get(pk=pk)
+            producto.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Registro.DoesNotExist:
+            return Response({'error': 'Producto no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
