@@ -11,6 +11,10 @@ class SalirViewSet(ViewSet):
         serializer= SalirSerializer(Salida.objects.all(), many=True)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
     
+    def retrieve(self,request, pk=int):
+        serializer = SalirSerializer(Salida.objects.get(pk=int))
+        return Response(status=status.HTTP_201_CREATED, data=serializer.data)
+    
     def create(self, request):
         serializer = SalirSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

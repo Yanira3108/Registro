@@ -11,7 +11,7 @@ class RegApiView(ViewSet):
         return Response(status=status.HTTP_200_OK, data=serializer.data)
     
     def retrieve(self,request, pk=int):
-        serializer = RegisSerializer(Registro.object.get(pk=int))
+        serializer = RegisSerializer(Registro.objects.get(pk=int))
         return Response(status=status.HTTP_201_CREATED, data=serializer.data)
     
     def create(self, request):
