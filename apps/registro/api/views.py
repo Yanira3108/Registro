@@ -32,6 +32,18 @@ class RegApiView(ViewSet):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    def partial_update(self, request, pk=None):
+        try:
+            producto = RegisSerializer.objects.get(pk=pk)  # Buscar el producto por ID
+        except Registro.DoesNotExist:
+            return Response({'error': 'Producto no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = RegisSerializer(producto, data=request.data, partial=True)  # Permitir actualización parcial
+        if serializer.is_valid():
+            serializer.save()  # Guardar los cambios
+            return Response(serializer.data)  # Devolver los datos actualizados
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
     def destroy(self, request, pk=None):
         try:
             producto = Registro.objects.get(pk=pk)
